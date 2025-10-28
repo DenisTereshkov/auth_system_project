@@ -104,12 +104,12 @@ class Role(models.Model):
     """
     Модель ролей пользователей.
     """
-    name = models.models.CharField(
+    name = models.CharField(
         max_length=MAX_NAMING_LENGTH,
         unique=True,
         verbose_name='Название роли'
     )
-    description = models.models.CharField(
+    description = models.CharField(
         max_length=50,
         blank=True,
         verbose_name='Описание роли'

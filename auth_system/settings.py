@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'users',
-    'auth',
+    'app_auth',
     'permissions',
     'business_entities',
 ]
