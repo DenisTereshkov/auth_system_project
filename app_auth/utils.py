@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils import timezone
+from .models import TokenBlacklist
 
 User = get_user_model()
 
@@ -19,7 +19,7 @@ def generate_access_token(user):
         "iat": datetime.utcnow(),
         "type": "access"
     }
-    token = jwt.encode(payload,settings.SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
     return token
 
 
@@ -28,6 +28,8 @@ def verify_access_token(token):
     Проверяет JWT токен и возвращает payload если валиден.
     """
     try:
+        if TokenBlacklist.is_token_blacklisted(token):
+            return None
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         return payload
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
