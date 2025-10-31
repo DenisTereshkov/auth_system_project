@@ -2,20 +2,21 @@ import hashlib
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from .constants import TOKEN_HASH, REASON_LENGTH, EXIRES_TIME
 
 
 class TokenBlacklist(models.Model):
     """
     Модель для черного списка JWT токенов
     """
-    token_hash = models.CharField(max_length=64, unique=True)
+    token_hash = models.CharField(max_length=TOKEN_HASH, unique=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
     expires_at = models.DateTimeField()
     blacklisted_at = models.DateTimeField(auto_now_add=True)
-    reason = models.CharField(max_length=100, blank=True)
+    reason = models.CharField(max_length=REASON_LENGTH, blank=True)
 
     class Meta:
         db_table = 'auth_token_blacklist'
@@ -47,7 +48,7 @@ class TokenBlacklist(models.Model):
                 tz=timezone.utc
             )
         except Exception:
-            expires_at = timezone.now() + timezone.timedelta(hours=24)
+            expires_at = timezone.now() + timezone.timedelta(hours=EXIRES_TIME)
         return cls.objects.create(
             token_hash=token_hash,
             user=user,

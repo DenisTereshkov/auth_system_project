@@ -38,9 +38,13 @@ class ProjectUserManager(BaseUserManager):
 
 
 class ProjectUser(AbstractBaseUser):
-    email = models.EmailField(unique=True, verbose_name="Email/Почта")
-    first_name = models.CharField(max_length=150, verbose_name="Имя")
-    last_name = models.CharField(max_length=150, verbose_name="Фамилия")
+    email = models.EmailField(
+        max_length=EMAIL_LENGTH,
+        unique=True,
+        verbose_name="Email/Почта"
+    )
+    first_name = models.CharField(max_length=MAX_NAMING_LENGTH, verbose_name="Имя")
+    last_name = models.CharField(max_length=MAX_NAMING_LENGTH, verbose_name="Фамилия")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     role = models.CharField(
         max_length=20,
