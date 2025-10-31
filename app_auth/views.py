@@ -7,6 +7,7 @@ from .utils import generate_access_token
 from .decorators import jwt_required
 from .serializers import UserLoginSerializer, TokenResponseSerializer
 from users.serializers import UserPublicSerializer
+from .models import TokenBlacklist
 
 User = get_user_model()
 
@@ -58,6 +59,8 @@ def logout(request):
     Выход из системы
     POST /api/auth/logout/
     """
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    TokenBlacklist.add_token(token, request.user, reason='logout')
     return Response({
         'message': 'Успешный выход из системы'
     })
