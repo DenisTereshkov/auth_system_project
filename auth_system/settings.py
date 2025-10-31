@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'app_auth',
-    'permissions',
     'business_entities',
 ]
 

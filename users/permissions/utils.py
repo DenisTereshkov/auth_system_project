@@ -9,7 +9,4 @@ def check_owner_permission(user, obj):
 
 
 def check_admin_permission(user):
-    """Проверяет, что пользователь - админ"""
-    if not user or not user.is_authenticated:
-        return False
-    return user.userrole_set.filter(role__name="admin").exists()
+    return user and user.is_authenticated and user.is_admin()
