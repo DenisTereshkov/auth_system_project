@@ -6,11 +6,8 @@ from .models import Task, News
 from .serializers import TaskSerializer, NewsSerializer
 from users.permissions.permissions import (
     IsAuthenticated,
-    IsOwnerOrAdmin,
-    IsAssignerOrAdmin, 
     IsOwnerOrAssignerOrAdmin,
     IsOwnerOrAdminOrReadOnly,
-    IsAdmin
 )
 
 
@@ -58,7 +55,7 @@ def task_detail(request, pk):
                 "data": serializer.data
             })
         return Response({
-            "error": "Ошибка валидации", 
+            "error": "Ошибка валидации",
             "details": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "DELETE":

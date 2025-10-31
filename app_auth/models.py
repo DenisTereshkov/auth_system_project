@@ -3,16 +3,20 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+
 class TokenBlacklist(models.Model):
     """
     Модель для черного списка JWT токенов
     """
     token_hash = models.CharField(max_length=64, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
     expires_at = models.DateTimeField()
     blacklisted_at = models.DateTimeField(auto_now_add=True)
     reason = models.CharField(max_length=100, blank=True)
-    
+
     class Meta:
         db_table = 'auth_token_blacklist'
         verbose_name = 'Токен в черном списке'
@@ -20,10 +24,10 @@ class TokenBlacklist(models.Model):
         indexes = [
             models.Index(fields=['expires_at']),
         ]
-    
+
     def __str__(self):
         return f"Blacklisted token for {self.user.email}"
-    
+
     @classmethod
     def add_token(cls, token, user, reason=''):
         """
@@ -32,8 +36,16 @@ class TokenBlacklist(models.Model):
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         try:
             import jwt
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'], options={"verify_exp": False})
-            expires_at = timezone.datetime.fromtimestamp(payload['exp'], tz=timezone.utc)
+            payload = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=['HS256'],
+                options={"verify_exp": False}
+            )
+            expires_at = timezone.datetime.fromtimestamp(
+                payload['exp'],
+                tz=timezone.utc
+            )
         except Exception:
             expires_at = timezone.now() + timezone.timedelta(hours=24)
         return cls.objects.create(
@@ -42,7 +54,7 @@ class TokenBlacklist(models.Model):
             expires_at=expires_at,
             reason=reason
         )
-    
+
     @classmethod
     def is_token_blacklisted(cls, token):
         """

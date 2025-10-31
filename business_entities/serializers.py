@@ -3,9 +3,16 @@ from .models import Task, News
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    created_by_name = serializers.CharField(source="created_by.full_name", read_only=True)
-    assigned_to_name = serializers.CharField(source="assigned_to.full_name", read_only=True, allow_null=True)
-    
+    created_by_name = serializers.CharField(
+        source="created_by.full_name",
+        read_only=True
+    )
+    assigned_to_name = serializers.CharField(
+        source="assigned_to.full_name",
+        read_only=True,
+        allow_null=True
+    )
+
     class Meta:
         model = Task
         fields = "__all__"
@@ -13,8 +20,11 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class NewsSerializer(serializers.ModelSerializer):
-    created_by_name = serializers.CharField(source="created_by.full_name", read_only=True)
-    
+    created_by_name = serializers.CharField(
+        source="created_by.full_name",
+        read_only=True
+    )
+
     class Meta:
         model = News
         fields = "__all__"

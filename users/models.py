@@ -1,18 +1,22 @@
 from django.db import models
-from django.contrib.auth.models import  AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from .constants import (
     EMAIL_LENGTH,
     MAX_NAMING_LENGTH,
 )
 
+
 class RoleType(models.TextChoices):
     USER = "user", "Обычный пользователь"
-    ADMIN = "admin", "Администратор" 
+    ADMIN = "admin", "Администратор"
     SUPERUSER = "superuser", "Суперпользователь"
 
 
 class ProjectUserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None, role=RoleType.USER):
+    def create_user(
+        self, email, first_name, last_name,
+        password=None, role=RoleType.USER
+    ):
         user = self.model(
             email=email,
             first_name=first_name,
@@ -31,8 +35,6 @@ class ProjectUserManager(BaseUserManager):
             last_name=extra_fields.get('last_name', 'Admin'),
             role=RoleType.SUPERUSER
         )
-
-
 
 
 class ProjectUser(AbstractBaseUser):

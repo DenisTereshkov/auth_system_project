@@ -35,6 +35,7 @@ def verify_access_token(token):
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return None
 
+
 def get_user_from_token(token):
     """
     Извлекает пользователя из JWT токена.

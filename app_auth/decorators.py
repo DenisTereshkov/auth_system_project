@@ -17,7 +17,7 @@ def jwt_required(view_func):
                 {
                     'error': 'Требуется аутентификация',
                     'message': 'Отсутствует JWT токен. Используйте формат: Authorization: Bearer <token>'
-                }, 
+                },
                 status=status.HTTP_401_UNAUTHORIZED
             )
         token = auth_header[7:].strip()

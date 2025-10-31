@@ -10,7 +10,7 @@ class UserLoginSerializer(serializers.Serializer):
     """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-    
+
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
@@ -34,4 +34,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'full_name']
-        read_only_fields = ['id', 'email', 'first_name', 'last_name', 'full_name']
+        read_only_fields = [
+            'id', 'email', 'first_name',
+            'last_name', 'full_name'
+        ]

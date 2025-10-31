@@ -7,8 +7,14 @@ User = get_user_model()
 class Entities(models.Model):
     """Базовая модель сущности."""
     title = models.CharField(max_length=200, verbose_name="Название сущности")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата обновления"
+    )
 
     class Meta:
         abstract = True
@@ -23,7 +29,6 @@ class Task(Entities):
         ("pending", "Ожидает"),
         ("completed", "Выполнено"),
     ]
-    
     title = models.CharField(max_length=200, verbose_name="Название задачи")
     description = models.TextField(blank=True, verbose_name="Описание")
     created_by = models.ForeignKey(

@@ -49,7 +49,11 @@ def update_profile(request):
     Обновить профиль пользователя
     PUT /api/users/profile/
     """
-    input_serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
+    input_serializer = UserUpdateSerializer(
+        request.user,
+        data=request.data,
+        partial=True
+    )
     if input_serializer.is_valid():
         user = input_serializer.save()
         response_serializer = UserPrivateSerializer(user)
