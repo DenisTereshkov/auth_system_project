@@ -4,12 +4,19 @@ from rest_framework.response import Response
 from app_auth.decorators import jwt_required
 from .models import Task, News
 from .serializers import TaskSerializer, NewsSerializer
-from users.permissions.permissions import IsAuthenticated, IsOwnerOrAdmin
+from users.permissions.permissions import (
+    IsAuthenticated,
+    IsOwnerOrAdmin,
+    IsAssignerOrAdmin, 
+    IsOwnerOrAssignerOrAdmin,
+    IsOwnerOrAdminOrReadOnly,
+    IsAdmin
+)
 
 
 @api_view(["GET", "POST"])
 @jwt_required
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, ])
 def task_list(request):
     if request.method == "GET":
         tasks = Task.objects.all()
@@ -30,7 +37,8 @@ def task_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@jwt_required 
+@jwt_required
+@permission_classes([IsAuthenticated, IsOwnerOrAssignerOrAdmin, ])
 def task_detail(request, pk):
     try:
         task = Task.objects.get(pk=pk)
@@ -62,7 +70,7 @@ def task_detail(request, pk):
 
 @api_view(["GET", "POST"])
 @jwt_required
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsOwnerOrAdminOrReadOnly,])
 def news_list(request):
     if request.method == "GET":
         news = News.objects.all()
@@ -84,6 +92,7 @@ def news_list(request):
 
 @api_view(["GET", "PUT", "DELETE"])
 @jwt_required
+@permission_classes([IsAuthenticated, IsOwnerOrAdminOrReadOnly,])
 def news_detail(request, pk):
     try:
         news = News.objects.get(pk=pk)
