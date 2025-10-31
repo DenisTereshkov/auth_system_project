@@ -1,107 +1,166 @@
-Первичная Структура Базы Данных
-Пользователи и Аутентификация:
-users - Учетные записи пользователей с мягким удалением (is_active)
-user_roles - Системные роли (админ, менеджер, пользователь и др.)
-users_user_roles - Связь многие-ко-многим пользователей и ролей
-jwt_refreshtoken - Refresh токены для обновления access токенов
-jwt_blacklist - Черный список JWT токенов для функциональности выхода из системы
+# Система аутентификации и авторизации
 
-Авторизация и Права доступа:
-permissions_object - Типы ресурсов (проект, задача и др.)
-permission_permission - Правила доступа: Роль → Объект → Действие
+Backend-приложение с собственной системой аутентификации и авторизации на Django REST Framework.
 
-Бизнес-Сущности (Демо МОКи):
-business_entities_project - Демонстрационные проекты с отслеживанием создателя
-business_entities_task - Демонстрационные задачи с отслеживанием создателя
+## Архитектура
 
-План как это работает:
-Пользователи могут иметь несколько ролей
-Права предоставляются ролям, а не отдельным пользователям
-Бизнес-объекты отслеживают своего создателя через created_by, для его взаимодействия с этими обьектами
-Действия CRUD(create, read, update, delete) - не таблица,а Enum
-JWT токены могут быть аннулированы через черный список
-Refresh токены позволяют обновлять access токены без повторного логина
+### Модули приложения
+- **app_auth** - JWT аутентификация (вход/выход)
+- **users** - управление пользователями
+- **business_entities** - демонстрационные бизнес-сущности
 
+### База данных
 
+#### Пользователи
+- **ProjectUser** - пользователи системы
+  - email, имя, фамилия
+  - роль (user/admin/superuser)
+  - мягкое удаление (is_active)
 
-Описание проекта
-Backend-приложение с собственной системой аутентификации и авторизации. Реализована кастомная JWT-аутентификация и ролевая модель доступа к ресурсам.
+#### Бизнес-сущности
+- **Task** - задачи (создатель, исполнитель, статус)
+- **News** - новости (создатель, заголовок, содержание)
 
-Архитектура системы
-Модули приложения
-app_auth - аутентификация (JWT токены, вход/выход)
+### Система прав доступа
 
-users - управление пользователями и ролями
+#### Роли пользователей
+- **user** - обычный пользователь
+- **admin** - администратор  
+- **superuser** - суперпользователь
 
-business_entities - демонстрационные бизнес-сущности
+#### Правила доступа
+- Все аутентифицированные пользователи могут просматривать и создавать объекты
+- Изменять и удалять можно только собственные объекты или объекты на которые ты назначен исполнителем (кроме администраторов)
+- Администраторы имеют полный доступ ко всем операциям
 
-permissions - система проверки прав доступа
+## API Endpoints
 
-База данных
-Пользователи и аутентификация
-ProjectUser - пользователи системы
+### Аутентификация
 
-email, имя, фамилия
+**Вход в систему**
+```http
+POST /api/auth/login/
+Content-Type: application/json
 
-роль (user/admin/superuser)
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-мягкое удаление (is_active)
+**Выход из системы**
+```http
+POST /api/auth/logout/
+Authorization: Bearer <jwt_token>
+```
 
-Бизнес-сущности (демо)
-Task - задачи (создатель, исполнитель, статус)
+### Пользователи
 
-News - новости (создатель, заголовок, содержание)
+**Регистрация**
+```http
+POST /api/users/register/
+Content-Type: application/json
 
-Система прав доступа
-Роли пользователей
-user - обычный пользователь
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "password_confirm": "password123",
+  "first_name": "Иван",
+  "last_name": "Иванов"
+}
+```
 
-admin - администратор
+**Профиль пользователя**
+```http
+GET /api/users/profile/
+Authorization: Bearer <jwt_token>
+```
 
-superuser - суперпользователь
+**Обновление профиля**
+```http
+PUT /api/users/profile/
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
 
-Правила доступа
-Все аутентифицированные пользователи могут:
+{
+  "first_name": "Новое имя",
+  "last_name": "Новая фамилия"
+}
+```
 
-Просматривать задачи и новости
+**Удаление аккаунта**
+```http
+DELETE /api/users/delete-account/
+Authorization: Bearer <jwt_token>
+```
 
-Создавать новые задачи и новости
+### Бизнес-сущности
 
-Изменять и удалять можно только:
+**Задачи**
 
-Собственные объекты (где пользователь - создатель)
+Получить список задач:
+```http
+GET /api/business/tasks/
+Authorization: Bearer <jwt_token>
+```
 
-Любые объекты (для администраторов)
+Создать задачу:
+```http
+POST /api/business/tasks/
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
 
-API endpoints
-Аутентификация
-POST /api/auth/login/ - вход в систему
+{
+  "title": "Новая задача",
+  "description": "Описание задачи",
+  "assigned_to": 2 (id пользователя на котором закреалена задача)
+}
+```
 
-POST /api/auth/logout/ - выход из системы
+Управление задачей:
+```http
+GET/PUT/DELETE /api/tasks/1/
+Authorization: Bearer <jwt_token>
+```
 
-Пользователи
-POST /api/users/register/ - регистрация
+**Новости**
 
-GET /api/users/profile/ - профиль пользователя
+Получить список новостей:
+```http
+GET /api/news/
+Authorization: Bearer <jwt_token>
+```
 
-PUT /api/users/profile/ - обновление профиля
+Создать новость:
+```http
+POST /api/news/
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
 
-DELETE /api/users/delete-account/ - удаление аккаунта
+{
+  "title": "Заголовок новости",
+  "content": "Текст новости"
+}
+```
 
-Бизнес-сущности
-GET,POST /api/business/tasks/ - список и создание задач
+Управление новостью:
+```http
+GET/PUT/DELETE /api/business/news/1/
+Authorization: Bearer <jwt_token>
+```
 
-GET,PUT,DELETE /api/business/tasks/{id}/ - управление задачей
+## Технологии
+- Django + Django REST Framework
+- PostgreSQL
+- JWT токены
+- Кастомная система permissions
+- Docker
 
-GET,POST /api/business/news/ - список и создание новостей
+## Запуск проекта
 
-GET,PUT,DELETE /api/business/news/{id}/ - управление новостью
+```bash
+# Сборка и запуск
+docker-compose up --build
 
-Технологии
-Django + Django REST Framework
-
-PostgreSQL
-
-JWT токены
-
-Кастомная система permissions
+# Приложение будет доступно по http://localhost:8000
+```
