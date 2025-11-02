@@ -28,6 +28,14 @@ Backend-приложение с собственной системой ауте
 - **admin** - администратор  
 - **superuser** - суперпользователь
 
+#### Permission классы
+- **IsAuthenticated** - только аутентифицированные пользователи
+- **IsOwnerOrAdmin** - владелец объекта или админ
+- **IsAssignerOrAdmin** - исполнитель задачи или админ  
+- **IsOwnerOrAssignerOrAdmin** - владелец, исполнитель или админ
+- **IsOwnerOrAdminOrReadOnly** - чтение: все, изменение: владелец или админ
+- **IsAdmin** - только администраторы
+
 #### Правила доступа
 - Все аутентифицированные пользователи могут просматривать и создавать объекты
 - Изменять и удалять можно только собственные объекты или объекты на которые ты назначен исполнителем (кроме администраторов)
@@ -100,20 +108,20 @@ Authorization: Bearer <jwt_token>
 
 Получить список задач:
 ```http
-GET /api/business/tasks/
+GET /api/tasks/
 Authorization: Bearer <jwt_token>
 ```
 
 Создать задачу:
 ```http
-POST /api/business/tasks/
+POST /api/tasks/
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
 
 {
   "title": "Новая задача",
   "description": "Описание задачи",
-  "assigned_to": 2 (id пользователя на котором закреалена задача)
+  "assigned_to": 2
 }
 ```
 
@@ -121,6 +129,13 @@ Content-Type: application/json
 ```http
 GET/PUT/DELETE /api/tasks/1/
 Authorization: Bearer <jwt_token>
+```
+
+**Демонстрация permissions для задач:**
+```http
+GET /api/tasks/owner-or-admin/1/ - только владелец или админ
+GET /apitasks/assigner-or-admin/1/ - только исполнитель или админ  
+GET /api/tasks/admin-only/ - только администраторы
 ```
 
 **Новости**
@@ -149,6 +164,11 @@ GET/PUT/DELETE /api/business/news/1/
 Authorization: Bearer <jwt_token>
 ```
 
+## Тестовые пользователи
+После запуска создаются тестовые пользователи:
+- Администратор: `admin@example.com` / `admin123`
+- Обычный пользователь: `user@example.com` / `user123`
+
 ## Технологии
 - Django + Django REST Framework
 - PostgreSQL
@@ -164,3 +184,16 @@ docker-compose up --build
 
 # Приложение будет доступно по http://localhost:8000
 ```
+
+## Демонстрация системы прав
+
+### Сценарии тестирования:
+
+1. **Без аутентификации** - все запросы возвращают 401
+2. **Обычный пользователь** - может создавать и просматривать, но редактировать только свои объекты
+3. **Администратор** - имеет полный доступ ко всем операциям
+
+### Примеры проверки permissions:
+- Попробуйте изменить чужую задачу как обычный пользователь - получите 403
+- Попробуйте доступ к `/tasks/admin-only/` как обычный пользователь - получите 403  
+- Администратор имеет доступ ко всем endpoint'ам
