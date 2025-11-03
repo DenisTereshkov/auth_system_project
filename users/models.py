@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.db import models
+
 from .constants import (
     EMAIL_LENGTH,
     MAX_NAMING_LENGTH,
@@ -43,9 +44,18 @@ class ProjectUser(AbstractBaseUser):
         unique=True,
         verbose_name="Email/Почта"
     )
-    first_name = models.CharField(max_length=MAX_NAMING_LENGTH, verbose_name="Имя")
-    last_name = models.CharField(max_length=MAX_NAMING_LENGTH, verbose_name="Фамилия")
-    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    first_name = models.CharField(
+        max_length=MAX_NAMING_LENGTH,
+        verbose_name="Имя"
+    )
+    last_name = models.CharField(
+        max_length=MAX_NAMING_LENGTH,
+        verbose_name="Фамилия"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Активен"
+    )
     role = models.CharField(
         max_length=20,
         choices=RoleType.choices,

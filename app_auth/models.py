@@ -1,14 +1,14 @@
 import hashlib
-from django.db import models
+
 from django.conf import settings
+from django.db import models
 from django.utils import timezone
-from .constants import TOKEN_HASH, REASON_LENGTH, EXIRES_TIME
+
+from .constants import EXPIRES_TIME, REASON_LENGTH, TOKEN_HASH
 
 
 class TokenBlacklist(models.Model):
-    """
-    Модель для черного списка JWT токенов
-    """
+    """Модель для черного списка JWT токенов."""
     token_hash = models.CharField(max_length=TOKEN_HASH, unique=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -31,9 +31,7 @@ class TokenBlacklist(models.Model):
 
     @classmethod
     def add_token(cls, token, user, reason=''):
-        """
-        Добавляет токен в черный список
-        """
+        """Добавляет токен в черный список."""
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         try:
             import jwt
@@ -48,7 +46,9 @@ class TokenBlacklist(models.Model):
                 tz=timezone.utc
             )
         except Exception:
-            expires_at = timezone.now() + timezone.timedelta(hours=EXIRES_TIME)
+            expires_at = timezone.now() + timezone.timedelta(
+                hours=EXPIRES_TIME
+            )
         return cls.objects.create(
             token_hash=token_hash,
             user=user,
@@ -58,9 +58,7 @@ class TokenBlacklist(models.Model):
 
     @classmethod
     def is_token_blacklisted(cls, token):
-        """
-        Проверяет, находится ли токен в черном списке
-        """
+        """Проверяет, находится ли токен в черном списке."""
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         return cls.objects.filter(
             token_hash=token_hash,

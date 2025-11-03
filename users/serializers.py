@@ -1,6 +1,6 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -17,9 +17,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
 
 
 class UserPrivateSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для приватных данных пользователя (профиль).
-    """
+    """Сериализатор для приватных данных пользователя (профиль)."""
     class Meta:
         model = User
         fields = [
@@ -33,9 +31,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор только для регистрации.
-    """
+    """Сериализатор только для регистрации."""
     password = serializers.CharField(write_only=True, min_length=6)
     password_confirm = serializers.CharField(write_only=True)
 
@@ -66,9 +62,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор только для обновления профиля
-    """
+    """Сериализатор только для обновления профиля."""
     class Meta:
         model = User
         fields = ['first_name', 'last_name']

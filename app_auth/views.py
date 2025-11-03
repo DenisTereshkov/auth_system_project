@@ -1,12 +1,13 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import check_password
-from .utils import generate_access_token
+
 from .decorators import jwt_required
-from .serializers import UserLoginSerializer, TokenResponseSerializer
 from .models import TokenBlacklist
+from .serializers import TokenResponseSerializer, UserLoginSerializer
+from .utils import generate_access_token
 
 User = get_user_model()
 
@@ -14,7 +15,7 @@ User = get_user_model()
 @api_view(['POST'])
 def login(request):
     """
-    Аутентификация пользователя
+    Аутентификация пользователя.
     POST /api/auth/login/
     """
     input_serializer = UserLoginSerializer(data=request.data)
@@ -51,7 +52,7 @@ def login(request):
 @jwt_required
 def logout(request):
     """
-    Выход из системы
+    Выход из системы.
     POST /api/auth/logout/
     """
     token = request.headers.get('Authorization', '').replace('Bearer ', '')

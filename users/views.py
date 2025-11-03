@@ -2,8 +2,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+
 from app_auth.decorators import jwt_required
-from .serializers import UserRegisterSerializer, UserPrivateSerializer, UserUpdateSerializer
+from .serializers import (
+    UserRegisterSerializer,
+    UserPrivateSerializer,
+    UserUpdateSerializer
+    )
 
 User = get_user_model()
 
@@ -11,7 +16,7 @@ User = get_user_model()
 @api_view(['POST'])
 def register(request):
     """
-    Регистрация нового пользователя
+    Регистрация нового пользователя.
     POST /api/users/register/
     """
     input_serializer = UserRegisterSerializer(data=request.data)
@@ -33,7 +38,7 @@ def register(request):
 @jwt_required
 def profile(request):
     """
-    Получить профиль пользователя
+    Получить профиль пользователя.
     GET /api/users/profile/
     """
     serializer = UserPrivateSerializer(request.user)
@@ -46,7 +51,7 @@ def profile(request):
 @jwt_required
 def update_profile(request):
     """
-    Обновить профиль пользователя
+    Обновить профиль пользователя.
     PUT /api/users/profile/
     """
     input_serializer = UserUpdateSerializer(
@@ -71,7 +76,7 @@ def update_profile(request):
 @jwt_required
 def delete_account(request):
     """
-    Мягкое удаление аккаунта
+    Мягкое удаление аккаунта.
     DELETE /api/users/delete-account/
     """
     request.user.soft_delete()

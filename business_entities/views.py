@@ -1,18 +1,20 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from app_auth.decorators import jwt_required
-from .models import Task, News
-from .serializers import TaskSerializer, NewsSerializer
 from users.permissions.permissions import (
-    IsAuthenticated,
-    IsOwnerOrAssignerOrAdmin,
-    IsOwnerOrAdminOrReadOnly,
     IsAdmin,
     IsAssignerOrAdmin,
+    IsAuthenticated,
     IsOwnerOrAdmin,
+    IsOwnerOrAdminOrReadOnly,
+    IsOwnerOrAssignerOrAdmin,
 )
 from users.permissions.utils import check_permissions_for_object
+
+from .models import News, Task
+from .serializers import NewsSerializer, TaskSerializer
 
 
 @api_view(["GET", "POST"])
@@ -146,7 +148,7 @@ def news_detail(request, pk):
 @api_view(["GET"])
 @jwt_required
 def simple_admin_only(request):
-    """Только для админов"""
+    """Только для админов."""
     permissions = (IsAuthenticated(), IsAdmin())
     if not check_permissions_for_object(request, permissions):
         return Response({
@@ -159,7 +161,7 @@ def simple_admin_only(request):
 @api_view(["GET"])
 @jwt_required
 def simple_owner_or_admin(request, task_id):
-    """Только владелец задачи или админ"""
+    """Только владелец задачи или админ."""
     permissions = (IsAuthenticated(), IsOwnerOrAdmin())
     if not check_permissions_for_object(request, permissions, task_id):
         return Response({
@@ -172,7 +174,7 @@ def simple_owner_or_admin(request, task_id):
 @api_view(["GET"])
 @jwt_required
 def simple_assigner_or_admin(request, task_id):
-    """Только исполнитель задачи или админ"""
+    """Только исполнитель задачи или админ."""
     permissions = (IsAuthenticated(), IsAssignerOrAdmin())
     if not check_permissions_for_object(request, permissions, task_id):
         return Response({

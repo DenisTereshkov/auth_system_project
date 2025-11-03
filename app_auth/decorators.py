@@ -1,6 +1,8 @@
 from functools import wraps
-from rest_framework.response import Response
+
 from rest_framework import status
+from rest_framework.response import Response
+
 from .utils import get_user_from_token
 
 
@@ -16,7 +18,8 @@ def jwt_required(view_func):
             return Response(
                 {
                     'error': 'Требуется аутентификация',
-                    'message': 'Отсутствует JWT токен. Используйте формат: Authorization: Bearer <token>'
+                    'message': 'Отсутствует JWT токен. Используйте формат: '
+                    'Authorization: Bearer <token>'
                 },
                 status=status.HTTP_401_UNAUTHORIZED
             )
@@ -34,7 +37,8 @@ def jwt_required(view_func):
             return Response(
                 {
                     'error': 'Невалидный токен',
-                    'message': 'Токен невалиден, просрочен или пользователь неактивен'
+                    'message': 'Токен невалиден, '
+                    'просрочен или пользователь неактивен'
                 },
                 status=status.HTTP_401_UNAUTHORIZED
             )

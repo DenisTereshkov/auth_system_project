@@ -1,13 +1,11 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 User = get_user_model()
 
 
 class UserLoginSerializer(serializers.Serializer):
-    """
-    Сериализатор только для входа пользователя
-    """
+    """Сериализатор только для входа пользователя."""
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -20,16 +18,14 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class TokenResponseSerializer(serializers.Serializer):
-    """
-    Сериализатор для ответа с токеном
-    """
+    """Сериализатор для ответа с токеном."""
     token = serializers.CharField()
 
 
 class UserBasicSerializer(serializers.ModelSerializer):
     """
-    Базовый сериализатор пользователя для auth приложения
-    Только основные поля для аутентификации
+    Базовый сериализатор пользователя для auth приложения.
+    Только основные поля для аутентификации.
     """
     class Meta:
         model = User

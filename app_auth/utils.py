@@ -3,15 +3,14 @@ from datetime import datetime, timedelta
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 from .models import TokenBlacklist
 
 User = get_user_model()
 
 
 def generate_access_token(user):
-    """
-    Генерирует JWT access токен для пользователя.
-    """
+    """Генерирует JWT access токен для пользователя."""
     payload = {
         "user_id": user.id,
         "email": user.email,
@@ -24,9 +23,7 @@ def generate_access_token(user):
 
 
 def verify_access_token(token):
-    """
-    Проверяет JWT токен и возвращает payload если валиден.
-    """
+    """Проверяет JWT токен и возвращает payload если валиден."""
     try:
         if TokenBlacklist.is_token_blacklisted(token):
             return None
@@ -51,13 +48,3 @@ def get_user_from_token(token):
         return user
     except User.DoesNotExist:
         return None
-
-
-def extract_token_from_header(request):
-    """
-    Извлекает JWT токен из HTTP запроса.
-    """
-    auth_header = request.headers.get('Authorization', '')
-    if auth_header.startswith('Bearer '):
-        return auth_header[7:]
-    return None
